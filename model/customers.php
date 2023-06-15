@@ -143,7 +143,26 @@ class Customers
 
         return $data;
     }
+    // csv manipulation
+    function generateCSV() {
+        $arr = explode("\n", $this->data);
 
+        foreach ($arr as &$line) {
+        $line = str_getcsv($line);
+        }
+
+        $localPath = '../csv/file.csv';
+
+        $fp = fopen($localPath, 'w');
+
+        foreach ($arr as $fields) {
+            fputcsv($fp, $fields);
+        }
+
+        $awsFileName = $name='myfile_'.date('m-d-Y_hia').'.csv';
+
+        return $this->uploadReportToAwsS3($localPath, $awsFileName);
+    }
     // pdf manipulation
     function generatePDF($id)
     {

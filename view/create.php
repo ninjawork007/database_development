@@ -199,12 +199,12 @@ include(__ROOT . '/includes/script.php');
                     data: {
                         data: data,
                         method: 'uploadCSV'
-                    }, // serializes the form's elements.
+                    }, 
                     dataType: "json",
                     success: function(data) {
 
-                        if (data.result === 'success') {
-                           console.log(data);
+                        if (data.result === true) {
+                           alert(`CSV is uploaded successfully on AWS S3. Path : ${data.s3Link}`);
                             
                         }
                     }
@@ -218,7 +218,9 @@ include(__ROOT . '/includes/script.php');
                     header.join(','), // header row first
                     ...mData.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
                 ].join('\r\n')
+
                 uploadCSV(csv);
+
                 download(csv);
                 
             }

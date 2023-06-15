@@ -1,6 +1,7 @@
 <?php
 
 require_once("../model/customers.php");
+require_once("../model/storeS3Link.php");
 session_start();
 
 switch ($_POST['method']) {
@@ -122,24 +123,20 @@ switch ($_POST['method']) {
     break;
 
   case 'uploadCSV':
-    $data = '';
+    
     $csv = $_POST['data'];
-    $arr = explode("\n", $csv);
+    
+    $Customers = new Customers($csv);
+    $s3Link = $Customers->generateCSV();
+    
+    $data = array($s3Link, 1);
+    $keys = array('link', 'user_id');
 
-    foreach ($arr as &$line) {
-      $line = str_getcsv($line);
-    }
+    $storeLink = new StoreS3Link($data);
+    $result = $storeLink->insert($keys);
+    $result['s3Link'] = $s3Link;
 
-    $fp = fopen('../csv/file.csv', 'w');
-
-    foreach ($arr as $fields) {
-        fputcsv($fp, $fields);
-    }
-
-    var_dump($arr); die;
-
-    $Customers = new Customers($data);
-    $result = $Customers->findById($id);
+   
     echo json_encode($result);
 
     break;
