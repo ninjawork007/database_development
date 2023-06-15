@@ -272,6 +272,7 @@ include(__ROOT . '/includes/script.php');
             // deal CSV
             $('body').on('click', '#updateCustomers', function(e) {
                 e.preventDefault();
+                showLoadingBar();
 
                 function uploadDealcsv() {};
 
@@ -284,7 +285,7 @@ include(__ROOT . '/includes/script.php');
 
                         var myFile = input.files[0];
                         var reader = new FileReader();
-
+                        var data = [];
                         reader.addEventListener('load', function(e) {
 
                             let csvdata = e.target.result;
@@ -301,15 +302,34 @@ include(__ROOT . '/includes/script.php');
                     let parsedata = [];
 
                     let newLinebrk = data.split("\n");
-                    for (let i = 0; i < newLinebrk.length; i++) {
+                    for (let i = 1; i < newLinebrk.length; i++) {
 
                         parsedata.push(newLinebrk[i].split(","))
                     }
-
+                    parseCsv.updateCustomerData(parsedata);
                     // console.table(parsedata);
-                    console.log(parsedata);
                 }
+                /** update customers info with CSV */
+                uploadDealcsv.prototype.updateCustomerData = function(data) {
+                    $.ajax({
+                        type: "POST",
+                        url: $host + '/controller/customers.php',
+                        data: {
+                            data: data,
+                            method: 'multiUpdate'
+                        },
+                        dataType: "json",
+                        success: function(data) {
 
+                            if (data.result === true) {
+                                alert(data.data);
+                                hideLoadingBar();
+
+                                location.reload();
+                            }
+                        }
+                    });
+                }
                 var parseCsv = new uploadDealcsv();
                 parseCsv.getCsv();
             })

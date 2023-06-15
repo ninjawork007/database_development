@@ -26,7 +26,7 @@ class Customers
             zipcode VARCHAR(5),
             income INT(10) NOT NULL,
             age INT(5) NOT NULL,
-            county VARCHAR(30) NOT NULL,
+            country VARCHAR(30) NOT NULL,
             phone_number VARCHAR(15) NOT NULL,
             home_value VARCHAR(100) NOT NULL,
             handled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -107,6 +107,36 @@ class Customers
             return array('id' => $id, 'result' => $q);
         else
             return array('id' => 0, 'result' => (bool) false);
+    }
+
+    function multiUpdate() {
+        $conn = dbCon();
+        
+        $csv = $this->data;
+        $res = (bool) false;
+        
+        for($i = 0; $i < count($csv); $i ++) {
+            $query = '';
+            $item = $csv[$i];
+            
+            $query .= "name = $item[1], ";
+            $query .= "address=$item[2], ";
+            $query .= "city = $item[3], ";
+            $query .= "state = $item[4], ";
+            $query .= "zipcode = $item[5], ";
+            $query .= "income = $item[6], ";
+            $query .= "age = $item[7], ";
+            $query .= "country = $item[8], ";
+            $query .= "phone_number = $item[9], ";
+            $query .= "home_value = $item[10]";
+
+            $sql = "UPDATE tbl_customers SET " . $query . " WHERE id=" .  $item[0];
+            $q = mysqli_query($conn, $sql);
+
+            if($i == (count($csv)-1))
+              return $q;
+        }
+        
     }
 
     function delete($id = NULL)

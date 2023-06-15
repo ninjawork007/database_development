@@ -123,12 +123,12 @@ switch ($_POST['method']) {
     break;
 
   case 'uploadCSV':
-    
+
     $csv = $_POST['data'];
-    
+
     $Customers = new Customers($csv);
     $s3Link = $Customers->generateCSV();
-    
+
     $data = array($s3Link, 1);
     $keys = array('link', 'user_id');
 
@@ -136,8 +136,19 @@ switch ($_POST['method']) {
     $result = $storeLink->insert($keys);
     $result['s3Link'] = $s3Link;
 
-   
+
     echo json_encode($result);
+
+    break;
+
+  case 'multiUpdate':
+
+    $csv = $_POST['data'];
+
+    $Customers = new Customers($csv);
+    $result = $Customers->multiUpdate();
+
+    echo json_encode(array('result' => $result, 'data' => 'Update Success'));
 
     break;
 
