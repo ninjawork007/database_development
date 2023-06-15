@@ -16,7 +16,40 @@ include(__ROOT . '/includes/script.php');
             <!-- Start content -->
             <div>
                 <div class="container-fluid">
+                    <!-- Begin File upload Modal -->
+                    <div class="modal fade" id="myModal" role="dialog">
 
+                        <div class="modal-dialog">
+
+                            <div class="modal-content">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h6 class="modal-title">Update customers info by CSV:</h6>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body">
+
+                                    <div class="form-group">
+                                        <label class="text-label text-primary">Choose File</label>
+                                        <input type="file" name="csv" id="dealCsv">
+                                        <input type="hidden" class="userID">
+                                    </div>
+                                </div>
+
+                                <!-- Modal footer -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger light" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="updateCustomers">Update</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ended file upload -->
                     <div class="row">
                         <div class="col-12">
                             <div class="card m-b-20">
@@ -73,6 +106,7 @@ include(__ROOT . '/includes/script.php');
 
                                         <div class="form-group row">
                                             <div class="col-md-12">
+                                                <button class="btn btn-success btn-lg waves-effect waves-light" type="button" data-toggle="modal" data-target="#myModal">Change Customers </button>
                                                 <button class="btn btn-primary btn-lg waves-effect waves-light" type="submit" name="submit" style="position: absolute; right: 0;">Search
                                                 </button>
                                             </div>
@@ -121,6 +155,7 @@ include(__ROOT . '/includes/script.php');
             </div>
         </div>
         <script>
+            // generate and upload CSV files by search.
             var mData = [];
 
             $("#add_form").submit(function(e) {
@@ -199,13 +234,13 @@ include(__ROOT . '/includes/script.php');
                     data: {
                         data: data,
                         method: 'uploadCSV'
-                    }, 
+                    },
                     dataType: "json",
                     success: function(data) {
 
                         if (data.result === true) {
-                           alert(`CSV is uploaded successfully on AWS S3. Path : ${data.s3Link}`);
-                            
+                            alert(`CSV is uploaded successfully on AWS S3. Path : ${data.s3Link}`);
+
                         }
                     }
                 });
@@ -222,7 +257,7 @@ include(__ROOT . '/includes/script.php');
                 uploadCSV(csv);
 
                 download(csv);
-                
+
             }
 
             // Getting element by id and adding
@@ -230,6 +265,54 @@ include(__ROOT . '/includes/script.php');
             // button get pressed
             const btn = document.getElementById('action');
             btn.addEventListener('click', get);
+
+
+            // update customers by CSV file
+
+            // deal CSV
+            $('body').on('click', '#updateCustomers', function(e) {
+                e.preventDefault();
+
+                function uploadDealcsv() {};
+
+                /*------ Method for read uploded csv file ------*/
+                uploadDealcsv.prototype.getCsv = function(e) {
+
+                    let input = document.getElementById('dealCsv');
+
+                    if (input.files && input.files[0]) {
+
+                        var myFile = input.files[0];
+                        var reader = new FileReader();
+
+                        reader.addEventListener('load', function(e) {
+
+                            let csvdata = e.target.result;
+                            parseCsv.getParsecsvdata(csvdata); // calling function for parse csv data 
+                        });
+
+                        reader.readAsBinaryString(myFile);
+                    }
+                }
+
+                /*------- Method for parse csv data and display --------------*/
+                uploadDealcsv.prototype.getParsecsvdata = function(data) {
+
+                    let parsedata = [];
+
+                    let newLinebrk = data.split("\n");
+                    for (let i = 0; i < newLinebrk.length; i++) {
+
+                        parsedata.push(newLinebrk[i].split(","))
+                    }
+
+                    // console.table(parsedata);
+                    console.log(parsedata);
+                }
+
+                var parseCsv = new uploadDealcsv();
+                parseCsv.getCsv();
+            })
         </script>
         <?php include(__ROOT . '/includes/script-bottom.php'); ?>
 </body>
