@@ -1,0 +1,3 @@
+id,name,address,city,state,zipcode,income,age,country,phone_number,home_value,handled_at
+1,"John Jackson","305 - 14th Ave. S. Suite 3B",Seattle,NY,98128,120000,23,USA,8033102569,3,"2023-06-14 09:53:59"
+6,"John Pack","14th Ave. S. Suite 3B",Seattle,NY,98128,130000,27,USA,8033102569,8,"2023-06-14 11:34:58"

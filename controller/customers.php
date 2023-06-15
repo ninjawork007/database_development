@@ -84,11 +84,11 @@ switch ($_POST['method']) {
 
   case 'search':
     $count = 0;
-    foreach ($_POST as $key => $value) { 
-      if($value != "")
-       $count ++;
+    foreach ($_POST as $key => $value) {
+      if ($value != "")
+        $count++;
     }
-    
+
     $query = "WHERE ";
     $i = 0;
 
@@ -100,24 +100,47 @@ switch ($_POST['method']) {
         if ($key == 'name') {
           $name = ucwords($value);
           $query .= "BINARY name like '%$name%'";
-        } else if($key == 'address') {
+        } else if ($key == 'address') {
           $address = ucwords($value);
           $query .= "BINARY address like '%$address%'";
         } else {
           $query .= $key . " = '$value'";
         }
-        
-        if ($i != ($count -2)) {
+
+        if ($i != ($count - 2)) {
           $query .= "AND ";
         }
-        $i ++;
+        $i++;
       }
     }
-    
+
     $Customers = new Customers($query);
     $result = $Customers->searchClient();
-    
-    echo json_encode(array('result'=>'success', 'data'=>$result));
+
+    echo json_encode(array('result' => 'success', 'data' => $result));
+
+    break;
+
+  case 'uploadCSV':
+    $data = '';
+    $csv = $_POST['data'];
+    $arr = explode("\n", $csv);
+
+    foreach ($arr as &$line) {
+      $line = str_getcsv($line);
+    }
+
+    $fp = fopen('../csv/file.csv', 'w');
+
+    foreach ($arr as $fields) {
+        fputcsv($fp, $fields);
+    }
+
+    var_dump($arr); die;
+
+    $Customers = new Customers($data);
+    $result = $Customers->findById($id);
+    echo json_encode($result);
 
     break;
 

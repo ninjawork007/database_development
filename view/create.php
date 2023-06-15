@@ -191,28 +191,24 @@ include(__ROOT . '/includes/script.php');
                 a.click()
             }
 
-            const csvmaker = function(data) {
+            const uploadCSV = function(data) {
 
-                // Empty array for storing the values
-                csvRows = [];
+                $.ajax({
+                    type: "POST",
+                    url: $host + '/controller/customers.php',
+                    data: {
+                        data: data,
+                        method: 'uploadCSV'
+                    }, // serializes the form's elements.
+                    dataType: "json",
+                    success: function(data) {
 
-                // Headers is basically a keys of an
-                // object which is id, name, and
-                // profession
-                const headers = Object.keys(data);
-
-                // As for making csv format, headers 
-                // must be separated by comma and
-                // pushing it into array
-                csvRows.push(headers.join(','));
-
-                // Pushing Object values into array
-                // with comma separation
-                const values = Object.values(data).join(',');
-                csvRows.push(values)
-
-                // Returning the array joining with new line 
-                return csvRows.join('\n')
+                        if (data.result === 'success') {
+                           console.log(data);
+                            
+                        }
+                    }
+                });
             }
 
             const get = async function() {
@@ -222,8 +218,9 @@ include(__ROOT . '/includes/script.php');
                     header.join(','), // header row first
                     ...mData.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
                 ].join('\r\n')
-                
+                uploadCSV(csv);
                 download(csv);
+                
             }
 
             // Getting element by id and adding
